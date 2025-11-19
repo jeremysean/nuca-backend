@@ -6,6 +6,7 @@ import logging
 from app.config import settings
 from app.routers import consent, profiles, family, scan
 from app.schemas import HealthCheckResponse
+from app.routers import consent, profiles, family, scan, auth, products
 
 
 logging.basicConfig(
@@ -76,7 +77,7 @@ app.include_router(consent.router)
 app.include_router(profiles.router)
 app.include_router(family.router)
 app.include_router(scan.router)
-
+app.include_router(auth.router)
 
 @app.get("/healthz", response_model=HealthCheckResponse)
 async def health_check():
