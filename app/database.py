@@ -7,8 +7,9 @@ from typing import Generator
 engine = create_engine(
     settings.database_url,
     pool_pre_ping=True,
-    pool_size=10,
-    max_overflow=20,
+    pool_size=5,           
+    max_overflow=10,      
+    pool_recycle=3600,
     echo=False
 )
 
