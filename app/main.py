@@ -78,6 +78,8 @@ app.include_router(profiles.router)
 app.include_router(family.router)
 app.include_router(scan.router)
 app.include_router(auth.router)
+app.include_router(products.router)
+
 
 @app.get("/healthz", response_model=HealthCheckResponse)
 async def health_check():
