@@ -15,9 +15,7 @@ class Settings(BaseSettings):
     
     openfoodfacts_api_url: str = "https://world.openfoodfacts.org/api/v2"
     
-    cors_origins: List[str] = [
-        "nuca://callback",
-        "http://localhost:3000"]
+    cors_origins: str = '["nuca://callback","http://localhost:3000"]'
     
     log_level: str = "INFO"
     
