@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
+from sqlalchemy import desc
 from sqlalchemy.orm import Session
 from typing import Optional
 from uuid import UUID
@@ -261,3 +262,50 @@ async def scan_barcode(
         product=product_response,
         suggest_add=False
     )
+
+
+@router.get("/history")
+async def get_scan_history(
+    profile_id: Optional[UUID] = Query(None),
+    limit: int = Query(50, ge=1, le=100),
+    offset: int = Query(0, ge=0),
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    query = db.query(ScanSession).filter(
+        ScanSession.user_id == current_user.id
+    )
+    
+    if profile_id:
+        query = query.filter(ScanSession.profile_id == profile_id)
+    
+    total = query.count()
+    
+    scans = query.order_by(desc(ScanSession.scanned_at)).offset(offset).limit(limit).all()
+    
+    results = []
+    for scan in scans:
+        product = scan.product if hasattr(scan, 'product') else db.query(Product).filter(Product.id == scan.product_id).first()
+        
+        if product:
+            results.append({
+                'id': str(scan.id),
+                'product_id': str(product.id),
+                'barcode': product.barcode,
+                'name': product.name,
+                'brand': product.brand,
+                'image_url': product.image_url,
+                'grade': scan.grade.value if scan.grade else None,
+                'scanned_at': scan.scanned_at.isoformat(),
+                'dangerous_nutrients_count': scan.dangerous_nutrients_count,
+                'allergen_count': scan.allergen_count,
+                'sugar_pct_of_limit': float(scan.sugar_pct_of_limit) if scan.sugar_pct_of_limit else 0,
+                'logged_as_consumed': scan.logged_as_consumed
+            })
+    
+    return {
+        'total': total,
+        'limit': limit,
+        'offset': offset,
+        'results': results
+    }
