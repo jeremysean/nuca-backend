@@ -101,8 +101,25 @@ async def get_current_user(
         raise HTTPException(status_code=401, detail="Invalid token payload")
     
     user = db.query(User).filter(User.supabase_user_id == supabase_user_id).first()
+    
+    # AUTO-CREATE USER ON FIRST LOGIN
     if not user:
-        raise HTTPException(status_code=404, detail="User not found")
+        email = payload.get("email", "")
+        display_name = email.split("@")[0] if email else "User"
+        
+        user = User(
+            supabase_user_id=supabase_user_id,
+            display_name=display_name,
+            email_encrypted=email,
+            is_active=True,
+            last_login_at=datetime.utcnow(),
+            data_retention_acknowledged=False
+        )
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+        
+        print(f"✅ Auto-created user: {user.id} ({email})")
     
     if not user.is_active:
         raise HTTPException(status_code=403, detail="User account is deactivated")
