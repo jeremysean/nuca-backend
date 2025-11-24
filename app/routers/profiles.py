@@ -60,7 +60,7 @@ def build_profile_response(profile_db: Profile, db: Session) -> ProfileResponse:
     )
 
 
-@router.post("/", response_model=ProfileResponse, status_code=201)
+@router.post("", response_model=ProfileResponse, status_code=201)
 async def create_profile(
     profile_data: ProfileCreate,
     current_user: User = Depends(get_current_user),
@@ -128,7 +128,7 @@ async def create_profile(
     return build_profile_response(profile, db)
 
 
-@router.get("/", response_model=List[ProfileResponse])
+@router.get("", response_model=List[ProfileResponse])
 async def list_profiles(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)

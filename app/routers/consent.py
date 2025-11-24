@@ -11,7 +11,7 @@ from app.schemas import ConsentCreate, ConsentResponse
 router = APIRouter(prefix="/api/v1/consent", tags=["Consent Management"])
 
 
-@router.post("/", response_model=ConsentResponse, status_code=201)
+@router.post("", response_model=ConsentResponse, status_code=201)
 async def grant_or_revoke_consent(
     consent_data: ConsentCreate,
     current_user: User = Depends(get_current_user),
@@ -68,7 +68,7 @@ async def grant_or_revoke_consent(
     return consent
 
 
-@router.get("/", response_model=List[ConsentResponse])
+@router.get("", response_model=List[ConsentResponse])
 async def list_user_consents(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)

@@ -60,7 +60,7 @@ def build_family_member_response(member_db: FamilyMember) -> FamilyMemberRespons
     )
 
 
-@router.post("/", response_model=FamilyMemberResponse, status_code=201)
+@router.post("", response_model=FamilyMemberResponse, status_code=201)
 async def create_family_member(
     member_data: FamilyMemberCreate,
     current_user: User = Depends(get_current_user),
@@ -127,7 +127,7 @@ async def create_family_member(
     return build_family_member_response(member)
 
 
-@router.get("/", response_model=List[FamilyMemberResponse])
+@router.get("", response_model=List[FamilyMemberResponse])
 async def list_family_members(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
